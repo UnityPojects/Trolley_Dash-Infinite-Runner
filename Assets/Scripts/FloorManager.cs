@@ -9,16 +9,24 @@ public class FloorManager : MonoBehaviour
     public float floorLength = 30.0f;
     public int numOfFloors = 7;
 
+    int index = 0;
+    List<Transform> floorSpawns;
+    float jumpLength = 0;
+
     public static FloorManager Instance;
 
     private void Awake()
     {
         Instance = this;
+        floorSpawns = new List<Transform>(numOfFloors);
+        index = 0;
+        jumpLength = floorLength * numOfFloors;
     }
 
     public void Pool()
     {
-        Debug.Log("pool");
+        floorSpawns[index].position = Vector3.forward*(jumpLength + floorSpawns[index].position.z);
+        index = (++index) % numOfFloors;
     }
 
     // Start is called before the first frame update
@@ -34,7 +42,9 @@ public class FloorManager : MonoBehaviour
         newPosition.x = 0.0f;
         newPosition.z += floorLength* offset - floorLength/2.0f;
         int index = Random.Range(0, floors.Length - 1);
-        Instantiate(floors[index], newPosition, floors[index].transform.rotation);
+        Transform floor = Instantiate(floors[index], newPosition, floors[index].transform.rotation).transform;
+
+        floorSpawns.Add(floor);
     }
 
     void SpawnMany(int num)
