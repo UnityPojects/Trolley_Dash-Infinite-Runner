@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    public float maxFowardPosition = 100.0f;
+    public float maxFowardPosition = 2000.0f;
     public Transform MovementController;
 
     float prevForwardPosition;
@@ -30,9 +30,20 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void ResetPositions()
+    {
+        if (MovementController.position.z > maxFowardPosition)
+        {
+            FloorManager.Instance.ResetPosition();
+            MovementController.position = Vector3.zero;
+            prevForwardPosition = MovementController.position.z;
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
         EndOfSegmentTrigger();
+        ResetPositions();
     }
 }

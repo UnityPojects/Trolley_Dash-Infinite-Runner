@@ -12,6 +12,7 @@ public class FloorManager : MonoBehaviour
     int index = 0;
     List<Transform> floorSpawns;
     float jumpLength = 0;
+    Vector3 initialPosition;
 
     public static FloorManager Instance;
 
@@ -29,10 +30,20 @@ public class FloorManager : MonoBehaviour
         index = (++index) % numOfFloors;
     }
 
+    public void ResetPosition()
+    {
+        for (int i = 0; i < numOfFloors; i++)
+        {
+            floorSpawns[i].position = Vector3.forward*(initialPosition.z + i*floorLength);
+        }
+        index = 0;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         SpawnMany(numOfFloors);
+        initialPosition = floorSpawns[0].position;
     }
     
     void Spawn(float offset)
