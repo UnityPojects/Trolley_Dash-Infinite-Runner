@@ -13,7 +13,7 @@ public class Pickup : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.tag == "Pickable")
+        if(other.gameObject.tag == Constants.Pickable)
         {
             other.gameObject.SetActive(false);
         }

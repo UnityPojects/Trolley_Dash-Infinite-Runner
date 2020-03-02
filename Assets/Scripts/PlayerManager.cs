@@ -7,15 +7,15 @@ public class PlayerManager : MonoBehaviour
 
     public static PlayerManager Instance;
 
-    public float laneOffset = 100.0f;
+    public float laneOffset;
 
     private void Awake()
     {
         Instance = this;
+        laneOffset = Constants.laneOffset;
     }
 
-
-    public void moveSideways(int direction)
+    public void MoveSideways(int direction)
     {
         float newXposition = transform.position.x + laneOffset * direction;
 

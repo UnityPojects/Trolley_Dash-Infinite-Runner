@@ -13,11 +13,11 @@ public class KeyBoardInputs : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            PlayerManager.Instance.moveSideways(-1);
+            PlayerManager.Instance.MoveSideways(-1);
         }
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            PlayerManager.Instance.moveSideways(1);
+            PlayerManager.Instance.MoveSideways(1);
 
         }
         if (Input.GetKeyDown(KeyCode.DownArrow))
