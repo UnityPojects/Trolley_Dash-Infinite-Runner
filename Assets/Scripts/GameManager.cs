@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    public float maxFowardPosition = 2000.0f;
+    public float maxFowardPosition;
     public Transform MovementController;
 
     float prevForwardPosition;
@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        maxFowardPosition = Constants.maxDistance;
     }
 
     private void Start()
