@@ -6,13 +6,20 @@ public class ObstacleManager : MonoBehaviour
 {
     public GameObject[] obstacles;
 
+    public static ObstacleManager Instance;
+
     List<Transform> obstacleSpawns;
     Vector3 lastSpawnPos;
     float threshold;
     int index = 0;
     int[] xPos = new int[] { -1, 0, 1 };
-    int minSpawns = 3;
+    const int minSpawns = 5;
     float spawnOffset = 0.0f;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -52,10 +59,6 @@ public class ObstacleManager : MonoBehaviour
         int randIndex = Random.Range(0, xPositionMultiples.Length);
         newPosition.x = Constants.laneOffset * xPositionMultiples[randIndex];
         newPosition.z = PlayerManager.Instance.transform.position.z + offset;
-        if(newPosition.z >= Constants.maxDistance)
-        {
-            newPosition.z -= Constants.maxDistance;
-        }
         obstacleSpawns[index].position = newPosition;
         index = (index+1) % obstacleSpawns.Count;
     }
@@ -67,10 +70,18 @@ public class ObstacleManager : MonoBehaviour
         {
             lastSpawnPos = playerPos;
         }
-        if(playerPos.z - lastSpawnPos.z > FloorManager.Instance.floorLength / 3.0f)
+        if(playerPos.z - lastSpawnPos.z > 2*FloorManager.Instance.floorLength / 3.0f)
         { 
             lastSpawnPos = playerPos;
             PoolSpawn(FloorManager.Instance.floorLength / 3.0f + spawnOffset, xPos);
+        }
+    }
+
+    public void ResetPosition()
+    {
+        foreach(Transform obstacle in obstacleSpawns)
+        {
+            obstacle.position -= Vector3.forward * Constants.maxDistance;
         }
     }
 

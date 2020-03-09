@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
             FloorManager.Instance.ResetPosition();
             MovementController.position = Vector3.zero;
             prevForwardPosition = MovementController.position.z;
+            ObstacleManager.Instance.ResetPosition();
         }
     }
 
