@@ -8,12 +8,11 @@ public class ObstacleManager : MonoBehaviour
 
     public static ObstacleManager Instance;
 
-    List<Transform> obstacleSpawns;
+    List<MultiObstacle> obstacleSpawns;
     Vector3 lastSpawnPos;
-    float threshold;
+    Vector3 lastPlayerPos;
     int index = 0;
-    int[] xPos = new int[] { -1, 0, 1 };
-    const int minSpawns = 5;
+    const int minSpawns = 6;
     float spawnOffset = 0.0f;
 
     private void Awake()
@@ -24,65 +23,66 @@ public class ObstacleManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        obstacleSpawns = new List<Transform>(minSpawns);
+        obstacleSpawns = new List<MultiObstacle>(minSpawns);
         InitiateObstacles();
-        lastSpawnPos = PlayerManager.Instance.transform.position;
-        threshold = FloorManager.Instance.floorLength;
+        lastPlayerPos = PlayerManager.Instance.transform.position;
     }
 
     void InitiateObstacles()
     {
         for (int index = 0; index < minSpawns; index++)
         {
-            Spawn(FloorManager.Instance.floorLength/3.0f * index, xPos);
-            spawnOffset += FloorManager.Instance.floorLength / 3.0f * index;
+            Spawn(FloorManager.Instance.floorLength/3.0f * (index-2));
         }
+        spawnOffset = FloorManager.Instance.floorLength / 3.0f * (minSpawns-1);
     }
 
 
-    void Spawn(float offset, int[] xPositionMultiples)
+    void Spawn(float offset)
     {
         Vector3 newPosition = transform.position;
         newPosition.y = 0.5f;
-        int randIndex = Random.Range(0, xPositionMultiples.Length);
-        newPosition.x = Constants.laneOffset*xPositionMultiples[randIndex];
+        newPosition.x = 0.0f;
         newPosition.z = offset + PlayerManager.Instance.transform.position.z;
         int index = Random.Range(0, obstacles.Length);
-        Transform obstacle = Instantiate(obstacles[index], newPosition, obstacles[index].transform.rotation).transform;
-        obstacleSpawns.Add(obstacle);
+        GameObject obstacle = Instantiate(obstacles[index], newPosition, obstacles[index].transform.rotation);
+        obstacleSpawns.Add(obstacle.GetComponent<MultiObstacle>());
+        lastSpawnPos = newPosition;
     }
 
-    void PoolSpawn(float offset, int[] xPositionMultiples)
+    void PoolSpawn(float offset)
     {
         Vector3 newPosition = transform.position;
         newPosition.y = 0.5f;
-        int randIndex = Random.Range(0, xPositionMultiples.Length);
-        newPosition.x = Constants.laneOffset * xPositionMultiples[randIndex];
         newPosition.z = PlayerManager.Instance.transform.position.z + offset;
-        obstacleSpawns[index].position = newPosition;
-        index = (index+1) % obstacleSpawns.Count;
+        newPosition.x = 0.0f;
+        obstacleSpawns[index].SetPosition(newPosition);
+        index = (index + 1) % obstacleSpawns.Count;
+
+        lastSpawnPos = newPosition;
     }
 
     public void PlaceObstacle()
     {
         Vector3 playerPos = PlayerManager.Instance.transform.position;
-        if(playerPos.z < lastSpawnPos.z)
+        if(playerPos.z < lastPlayerPos.z)
         {
-            lastSpawnPos = playerPos;
+            lastPlayerPos = playerPos;
         }
-        if(playerPos.z - lastSpawnPos.z > 2*FloorManager.Instance.floorLength / 3.0f)
-        { 
-            lastSpawnPos = playerPos;
-            PoolSpawn(FloorManager.Instance.floorLength / 3.0f + spawnOffset, xPos);
+        if(playerPos.z - lastPlayerPos.z > FloorManager.Instance.floorLength / 3.0f)
+        {
+            lastPlayerPos = playerPos;
+            PoolSpawn(spawnOffset);
         }
     }
 
     public void ResetPosition()
     {
-        foreach(Transform obstacle in obstacleSpawns)
+        foreach(MultiObstacle obstacle in obstacleSpawns)
         {
-            obstacle.position -= Vector3.forward * Constants.maxDistance;
+            obstacle.OffsetPosition( -Vector3.forward * Constants.maxDistance);
         }
+        lastSpawnPos -= Vector3.forward * Constants.maxDistance; 
     }
 
     // Update is called once per frame
