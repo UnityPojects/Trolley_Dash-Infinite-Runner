@@ -12,7 +12,7 @@ public class ObstacleManager : MonoBehaviour
     Vector3 lastSpawnPos;
     Vector3 lastPlayerPos;
     int index = 0;
-    const int minSpawns = 6;
+    const int minSpawns = 4;
     float spawnOffset = 0.0f;
 
     private void Awake()
@@ -46,7 +46,9 @@ public class ObstacleManager : MonoBehaviour
         newPosition.z = offset + PlayerManager.Instance.transform.position.z;
         int index = Random.Range(0, obstacles.Length);
         GameObject obstacle = Instantiate(obstacles[index], newPosition, obstacles[index].transform.rotation);
-        obstacleSpawns.Add(obstacle.GetComponent<MultiObstacle>());
+        MultiObstacle mObs = obstacle.GetComponent<MultiObstacle>();
+        mObs.RandomiseChildPositions();
+        obstacleSpawns.Add(mObs);
         lastSpawnPos = newPosition;
     }
 
@@ -57,6 +59,7 @@ public class ObstacleManager : MonoBehaviour
         newPosition.z = PlayerManager.Instance.transform.position.z + offset;
         newPosition.x = 0.0f;
         obstacleSpawns[index].SetPosition(newPosition);
+        obstacleSpawns[index].RandomiseChildPositions();
         index = (index + 1) % obstacleSpawns.Count;
 
         lastSpawnPos = newPosition;
